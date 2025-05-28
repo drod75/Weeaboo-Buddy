@@ -1,0 +1,45 @@
+# Name of the workflow.
+name: Ordered Workflow Sequence
+
+# This workflow will run on 'push' events to any branch
+# or on 'pull_request' events targeting any branch.
+on:
+  push:
+    branches:
+      - '**' # Triggers on push to any branch
+  pull_request:
+    branches:
+      - '**' # Triggers on pull request to any branch
+
+# Defines the jobs in this workflow.
+jobs:
+  # Job 1: Print Message
+  print-message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Print a message
+        run: echo "Hello from GitHub Actions!"
+
+  # Job 2: Future Workflows Placeholder
+  # This job will only run after 'print-message' job has successfully completed.
+  future-placeholder:
+    runs-on: ubuntu-latest
+    needs: print-message # This specifies the dependency
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Indicate placeholder
+        run: echo "This is a placeholder for future workflows."
+
+  # Job 3: Workflows Over
+  # This job will only run after 'future-placeholder' job has successfully completed.
+  workflows-over:
+    runs-on: ubuntu-latest
+    needs: future-placeholder # This specifies the dependency
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Print completion message
+        run: echo "All workflows are complete!"
