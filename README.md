@@ -36,8 +36,8 @@
 </details>
 
 ## Introduction
-An Agent powered by various API's meant to help an Anime enthusiast learn and research their favorite Anime's! 
-
+An Agent to help those interested in Anime learn facts, trends, and statistics about the latest anime!
+ 
 ## Features
 tbd
 
@@ -127,17 +127,17 @@ SOFTWARE.
 [Gemini]: https://img.shields.io/badge/Google%20Gemini-886FBF?style=for-the-badge&logo=googlegemini&logoColor=fff
 [Gemini-url]: https://gemini.google.com/app
 
-[Streamlit]: [https://img.shields.io/badge/Streamlit-262626?style=for-the-badge&logo=streamlit&logoColor=white](https://img.shields.io/badge/Streamlit-262626?style=for-the-badge&logo=streamlit&logoColor=white)
-[Streamlit-url]: [https://streamlit.io/](https://streamlit.io/)
+[Streamlit]: https://img.shields.io/badge/Streamlit-262626?style=for-the-badge&logo=streamlit&logoColor=white
+[Streamlit-url]: https://streamlit.io/
 
-[LangChain]: [https://img.shields.io/badge/LangChain-6B4FBB?style=for-the-badge&logo=langchain&logoColor=white](https://img.shields.io/badge/LangChain-6B4FBB?style=for-the-badge&logo=langchain&logoColor=white)
-[LangChain-url]: [https://www.langchain.com/](https://www.langchain.com/)
+[LangChain]: https://img.shields.io/badge/LangChain-6B4FBB?style=for-the-badge&logo=langchain&logoColor=white
+[LangChain-url]: https://www.langchain.com/
 
-[LangGraph]: [https://img.shields.io/badge/LangGraph-4A90E2?style=for-the-badge&logo=langgraph&logoColor=white](https://img.shields.io/badge/LangGraph-4A90E2?style=for-the-badge&logo=langgraph&logoColor=white)
-[LangGraph-url]: [https://www.langchain.com/langgraph](https://www.langchain.com/langgraph)
+[LangGraph]: https://img.shields.io/badge/LangGraph-4A90E2?style=for-the-badge&logo=langgraph&logoColor=white
+[LangGraph-url]: https://www.langchain.com/langgraph
 
-[Tavily]: [https://img.shields.io/badge/Tavily-1042FF?style=for-the-badge&logo=tavily&logoColor=white](https://img.shields.io/badge/Tavily-1042FF?style=for-the-badge&logo=tavily&logoColor=white)
-[Tavily-url]: [https://tavily.com/](https://tavily.com/)
+[Tavily]: https://img.shields.io/badge/Tavily-1042FF?style=for-the-badge&logo=tavily&logoColor=white
+[Tavily-url]: https://tavily.com/](https://tavily.com/
 
-[APIs]: [https://img.shields.io/badge/APIs-333333?style=for-the-badge&logo=apidocs&logoColor=white](https://img.shields.io/badge/APIs-333333?style=for-the-badge&logo=apidocs&logoColor=white)
-[APIs-url]: [https://www.postman.com/api-documentation-tool/](https://www.postman.com/api-documentation-tool/)
+[APIs]: https://img.shields.io/badge/APIs-333333?style=for-the-badge&logo=apidocs&logoColor=white
+[APIs-url]: https://www.postman.com/api-documentation-tool/
