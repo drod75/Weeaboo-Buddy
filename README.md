@@ -36,26 +36,46 @@
 </details>
 
 ## Introduction
-An Agent powered by various API's meant to help an Anime enthusiast learn and research their favorite Anime's!
-
+An Agent powered by various API's meant to help an Anime enthusiast learn and research their favorite Anime's! 
 
 ## Features
 tbd
 
 ### Built With
+[![Python][Python]][Python-url]
+[![Google Gemini][Gemini]][Gemini-url]
+[![LangChain][LangChain]][LangChain-url]
+[![LangGraph][LangGraph]][LangGraph-url]
+[![Tavily][Tavily]][Tavily-url]
+[![APIs][APIs]][APIs-url]
+[![Streamlit][Streamlit]][Streamlit-url]
 
 ### Workflow
-
+<div align="center">
+  <img src="./public/workflow.png" alt='flowchart' width=800>
+</div> <br>
+<p align="right"><a href="#readme-top">Back to top</a></p>
 
 ## Getting Started
+To get a local copy of Weeaboo-Buddy up and running locally follow these steps:  
 
 ### Prerequisites
-
+1. Make sure you have Python installed and use Python3 version 3.12   
+**NOTE:** You can check if Python is installed and its version with 
+    ```sh
+    python -V | python --version
+    ```
+2. Make sure you have Git installed  
+**NOTE:** You can check if Git is installed and its version with
+    ```sh
+    git -v | git --version
+    ```
+    
 ### Setup
-
+tbd
 
 ## Demo
-
+tbd
 
 ## Contributing
 We like open-source and want to develop practical applications for real-world problems. However, individual strength is limited. So, any kinds of contribution is welcome, such as:
@@ -100,3 +120,24 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+[Python]: https://img.shields.io/badge/python-FFDE57?style=for-the-badge&logo=python&logoColor=4584B6
+[Python-url]: https://www.python.org/
+
+[Gemini]: https://img.shields.io/badge/Google%20Gemini-886FBF?style=for-the-badge&logo=googlegemini&logoColor=fff
+[Gemini-url]: https://gemini.google.com/app
+
+[Streamlit]: [https://img.shields.io/badge/Streamlit-262626?style=for-the-badge&logo=streamlit&logoColor=white](https://img.shields.io/badge/Streamlit-262626?style=for-the-badge&logo=streamlit&logoColor=white)
+[Streamlit-url]: [https://streamlit.io/](https://streamlit.io/)
+
+[LangChain]: [https://img.shields.io/badge/LangChain-6B4FBB?style=for-the-badge&logo=langchain&logoColor=white](https://img.shields.io/badge/LangChain-6B4FBB?style=for-the-badge&logo=langchain&logoColor=white)
+[LangChain-url]: [https://www.langchain.com/](https://www.langchain.com/)
+
+[LangGraph]: [https://img.shields.io/badge/LangGraph-4A90E2?style=for-the-badge&logo=langgraph&logoColor=white](https://img.shields.io/badge/LangGraph-4A90E2?style=for-the-badge&logo=langgraph&logoColor=white)
+[LangGraph-url]: [https://www.langchain.com/langgraph](https://www.langchain.com/langgraph)
+
+[Tavily]: [https://img.shields.io/badge/Tavily-1042FF?style=for-the-badge&logo=tavily&logoColor=white](https://img.shields.io/badge/Tavily-1042FF?style=for-the-badge&logo=tavily&logoColor=white)
+[Tavily-url]: [https://tavily.com/](https://tavily.com/)
+
+[APIs]: [https://img.shields.io/badge/APIs-333333?style=for-the-badge&logo=apidocs&logoColor=white](https://img.shields.io/badge/APIs-333333?style=for-the-badge&logo=apidocs&logoColor=white)
+[APIs-url]: [https://www.postman.com/api-documentation-tool/](https://www.postman.com/api-documentation-tool/)
