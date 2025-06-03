@@ -81,7 +81,7 @@ We like open-source and want to develop practical applications for real-world pr
 ## License
 MIT License
 
-Copyright (c) 2025 Devin
+Copyright (c) 2025 drod75
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
