@@ -1,7 +1,7 @@
 [project]
 name = "weeaboo-buddy"
 version = "0.1.0"
-description = "Add your description here"
+description = " An Agent to help those interested in Anime learn facts, trends, and statistics about the latest anime!"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
