@@ -5,6 +5,7 @@ description = " An Agent to help those interested in Anime learn facts, trends, 
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "ipykernel>=6.29.5",
     "jikanpy-v4>=1.0.2",
     "langchain-community>=0.3.24",
     "langchain-core>=0.3.64",
