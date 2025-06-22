@@ -12,12 +12,6 @@ import os
 
 load_dotenv()
 
-# Create the agent
-model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
-search = TavilySearchResults(max_results=2)
-tools = get_all_jikan_tools()
-tools.append(search)
-
 
 def load_memory():
     cs = os.getenv("MONGO_URI")
@@ -27,15 +21,27 @@ def load_memory():
     return checkpointer
 
 
-console = Console()
-agent_executor = create_react_agent(model, tools, checkpointer=load_memory())
+def WeeabooBudddy():
+    model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+    search = TavilySearchResults(max_results=2)
+    tools = get_all_jikan_tools()
+    tools.append(search)
+
+    memory = load_memory()
+
+    agent = create_react_agent(model, tools, checkpointer=memory)
+
+    return agent
 
 
 # Agent Conversation Tool
 def talk_tuah():
+    console = Console()
+    agent = WeeabooBudddy()
+
     hi = input("Enter your question: ")
     config = {"configurable": {"thread_id": "abc123"}}
-    for step in agent_executor.stream(
+    for step in agent.stream(
         {"messages": [HumanMessage(content=hi)]},
         config,  # type: ignore
         stream_mode="values",
@@ -46,4 +52,5 @@ def talk_tuah():
             console.print(content)
 
 
-talk_tuah()
+if __name__ == "__main__":
+    talk_tuah()
