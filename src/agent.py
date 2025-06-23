@@ -1,4 +1,4 @@
-from tools.tools import get_all_jikan_tools
+from .tools.tools import get_all_jikan_tools
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.messages import HumanMessage, AIMessage
@@ -23,9 +23,9 @@ def load_memory():
 
 def WeeabooBudddy():
     model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
-    search = TavilySearchResults(max_results=2)
+    tavilly_search_tool = TavilySearchResults(max_results=2)
     tools = get_all_jikan_tools()
-    tools.append(search)
+    tools.append(tavilly_search_tool)
 
     memory = load_memory()
 
