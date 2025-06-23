@@ -3,16 +3,19 @@ LangChain Tools for Jikan API (MyAnimeList unofficial API)
 Provides tools for accessing anime, manga, character, and user information from MyAnimeList.
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Union
 from langchain_core.tools import tool
 from jikanpy import Jikan
 import requests
 import base64
+import json
 
 # Initialize Jikan client
 jikan = Jikan()
 BASE_URL = "https://api.trace.moe"
 
+# Base URL for waifu.im API
+WAIFU_BASE_URL = "https://api.waifu.im"
 
 @tool
 def anime(
@@ -367,12 +370,281 @@ def search_by_image_file(
     response.raise_for_status()
     return response.json()
 
-
-def get_all_jikan_tools() -> List:
-    """Returns a list of all Jikan API tools.
+@tool
+def get_waifu_tags() -> Dict[str, Any]:
+    """Gets all available tags/categories for waifu images.
 
     Returns:
-        List of all available Jikan tools
+        Dictionary containing all available tags and their information
+    """
+    try:
+        response = requests.get(f"{WAIFU_BASE_URL}/tags")
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        return {"error": f"Failed to fetch tags: {str(e)}"}
+
+
+@tool
+def get_waifu_tag_info(tag_name: str) -> Dict[str, Any]:
+    """Gets detailed information about a specific tag.
+
+    Args:
+        tag_name: Name of the tag to get information about
+
+    Returns:
+        Dictionary containing tag information
+    """
+    try:
+        response = requests.get(f"{WAIFU_BASE_URL}/tags/{tag_name}")
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        return {"error": f"Failed to fetch tag info for '{tag_name}': {str(e)}"}
+
+
+@tool
+def search_waifu_images(
+    included_tags: Optional[List[str]] = None,
+    excluded_tags: Optional[List[str]] = None,
+    is_nsfw: Optional[bool] = None,
+    gif: Optional[bool] = None,
+    order_by: Optional[str] = None,
+    orientation: Optional[str] = None,
+    many: Optional[bool] = False,
+    full: Optional[bool] = False,
+    width: Optional[str] = None,
+    height: Optional[str] = None,
+    byte_size: Optional[str] = None
+) -> Dict[str, Any]:
+    """Searches for waifu images based on specified criteria.
+
+    Args:
+        included_tags: List of tags that must be present in returned images
+        excluded_tags: List of tags that must NOT be present in returned images
+        is_nsfw: Filter by NSFW content (True/False/None for both)
+        gif: Filter by GIF format (True/False/None for both)
+        order_by: Order results by criteria ('FAVOURITES', 'UPLOADED_AT', 'RANDOM')
+        orientation: Image orientation ('LANDSCAPE', 'PORTRAIT', 'SQUARE')
+        many: Return multiple images (default: False for single image)
+        full: Return full image information (default: False)
+        width: Filter by image width ('>=800', '<=1920', etc.)
+        height: Filter by image height ('>=600', '<=1080', etc.)
+        byte_size: Filter by file size ('>=500KB', '<=5MB', etc.)
+
+    Returns:
+        Dictionary containing search results with image URLs and metadata
+    """
+    params = {}
+    
+    if included_tags:
+        params['included_tags'] = included_tags
+    if excluded_tags:
+        params['excluded_tags'] = excluded_tags
+    if is_nsfw is not None:
+        params['is_nsfw'] = str(is_nsfw).lower()
+    if gif is not None:
+        params['gif'] = str(gif).lower()
+    if order_by:
+        params['order_by'] = order_by
+    if orientation:
+        params['orientation'] = orientation
+    if many:
+        params['many'] = str(many).lower()
+    if full:
+        params['full'] = str(full).lower()
+    if width:
+        params['width'] = width
+    if height:
+        params['height'] = height
+    if byte_size:
+        params['byte_size'] = byte_size
+
+    try:
+        response = requests.get(f"{WAIFU_BASE_URL}/search", params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        return {"error": f"Failed to search images: {str(e)}"}
+
+
+@tool
+def get_random_waifu_image(
+    included_tags: Optional[List[str]] = None,
+    excluded_tags: Optional[List[str]] = None,
+    is_nsfw: Optional[bool] = False,
+    gif: Optional[bool] = None
+) -> Dict[str, Any]:
+    """Gets a random waifu image with optional filtering.
+
+    Args:
+        included_tags: List of tags that must be present
+        excluded_tags: List of tags that must NOT be present
+        is_nsfw: Include NSFW content (default: False)
+        gif: Filter by GIF format (True/False/None for both)
+
+    Returns:
+        Dictionary containing random image information
+    """
+    return search_waifu_images(
+        included_tags=included_tags,
+        excluded_tags=excluded_tags,
+        is_nsfw=is_nsfw,
+        gif=gif,
+        order_by='RANDOM',
+        many=False,
+        full=True
+    )
+
+
+@tool
+def get_multiple_waifu_images(
+    count: int = 5,
+    included_tags: Optional[List[str]] = None,
+    excluded_tags: Optional[List[str]] = None,
+    is_nsfw: Optional[bool] = False,
+    gif: Optional[bool] = None,
+    orientation: Optional[str] = None
+) -> Dict[str, Any]:
+    """Gets multiple waifu images at once.
+
+    Args:
+        count: Number of images to return (handled by making multiple requests)
+        included_tags: List of tags that must be present
+        excluded_tags: List of tags that must NOT be present
+        is_nsfw: Include NSFW content (default: False)
+        gif: Filter by GIF format (True/False/None for both)
+        orientation: Image orientation ('LANDSCAPE', 'PORTRAIT', 'SQUARE')
+
+    Returns:
+        Dictionary containing multiple image results
+    """
+    # Note: Waifu.im API typically returns one image per request
+    # This function makes the 'many' parameter True to try to get multiple images
+    return search_waifu_images(
+        included_tags=included_tags,
+        excluded_tags=excluded_tags,
+        is_nsfw=is_nsfw,
+        gif=gif,
+        orientation=orientation,
+        many=True,
+        full=True,
+        order_by='RANDOM'
+    )
+
+
+@tool
+def get_waifu_image_by_id(image_id: Union[int, str]) -> Dict[str, Any]:
+    """Gets a specific waifu image by its ID.
+
+    Args:
+        image_id: The ID of the specific image to retrieve
+
+    Returns:
+        Dictionary containing the specific image information
+    """
+    try:
+        # Use the search endpoint with specific file ID
+        params = {'included_files': [str(image_id)], 'full': 'true'}
+        response = requests.get(f"{WAIFU_BASE_URL}/search", params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        return {"error": f"Failed to fetch image with ID '{image_id}': {str(e)}"}
+
+
+@tool
+def get_popular_waifu_images(
+    included_tags: Optional[List[str]] = None,
+    excluded_tags: Optional[List[str]] = None,
+    is_nsfw: Optional[bool] = False,
+    orientation: Optional[str] = None
+) -> Dict[str, Any]:
+    """Gets popular/most favorited waifu images.
+
+    Args:
+        included_tags: List of tags that must be present
+        excluded_tags: List of tags that must NOT be present
+        is_nsfw: Include NSFW content (default: False)
+        orientation: Image orientation ('LANDSCAPE', 'PORTRAIT', 'SQUARE')
+
+    Returns:
+        Dictionary containing popular image results
+    """
+    return search_waifu_images(
+        included_tags=included_tags,
+        excluded_tags=excluded_tags,
+        is_nsfw=is_nsfw,
+        orientation=orientation,
+        order_by='FAVOURITES',
+        many=True,
+        full=True
+    )
+
+
+@tool
+def get_waifu_images_by_character(
+    character_name: str,
+    is_nsfw: Optional[bool] = False,
+    gif: Optional[bool] = None,
+    many: Optional[bool] = True
+) -> Dict[str, Any]:
+    """Gets waifu images featuring a specific character.
+
+    Args:
+        character_name: Name of the character to search for
+        is_nsfw: Include NSFW content (default: False)
+        gif: Filter by GIF format (True/False/None for both)
+        many: Return multiple images (default: True)
+
+    Returns:
+        Dictionary containing character-specific image results
+    """
+    # Assuming character names are used as tags
+    return search_waifu_images(
+        included_tags=[character_name.lower()],
+        is_nsfw=is_nsfw,
+        gif=gif,
+        many=many,
+        full=True,
+        order_by='FAVOURITES'
+    )
+
+
+@tool
+def get_waifu_images_by_anime(
+    anime_name: str,
+    is_nsfw: Optional[bool] = False,
+    gif: Optional[bool] = None,
+    many: Optional[bool] = True
+) -> Dict[str, Any]:
+    """Gets waifu images from a specific anime series.
+
+    Args:
+        anime_name: Name of the anime series to search for
+        is_nsfw: Include NSFW content (default: False)
+        gif: Filter by GIF format (True/False/None for both)
+        many: Return multiple images (default: True)
+
+    Returns:
+        Dictionary containing anime-specific image results
+    """
+    # Assuming anime names are used as tags
+    return search_waifu_images(
+        included_tags=[anime_name.lower().replace(' ', '-')],
+        is_nsfw=is_nsfw,
+        gif=gif,
+        many=many,
+        full=True,
+        order_by='FAVOURITES'
+    )
+
+
+def get_all_tools() -> List:
+    """Returns a list of all API tools.
+
+    Returns:
+        List of all available tools
     """
     return [
         anime,
@@ -396,4 +668,13 @@ def get_all_jikan_tools() -> List:
         watch,
         search_by_image_url,
         search_by_image_file,
+	get_waifu_tags,
+        get_waifu_tag_info,
+        search_waifu_images,
+        get_random_waifu_image,
+        get_multiple_waifu_images,
+        get_waifu_image_by_id,
+        get_popular_waifu_images,
+        get_waifu_images_by_character,
+        get_waifu_images_by_anime,
     ]
