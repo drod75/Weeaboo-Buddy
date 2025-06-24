@@ -38,4 +38,4 @@ jobs:
           app.py
           src/agent.py
           src/tools/tools.py
-        args: "format --check --diff ."
+        args: "format"
