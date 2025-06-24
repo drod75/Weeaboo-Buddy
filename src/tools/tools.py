@@ -1,24 +1,21 @@
 """
-LangChain Tools for Jikan API (MyAnimeList unofficial API)
-Provides tools for accessing anime, manga, character, and user information from MyAnimeList.
+LangChain Tools for Jikan API (MyAnimeList unofficial API), and Trace Moe API (Image Scene Tracing)
+Provides tools for accessing anime, manga, character, and user information from MyAnimeList, and scene locater tools.
 """
 
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, Any, Optional, List
 from langchain_core.tools import tool
 from jikanpy import Jikan
 import requests
 import base64
-import json
 
 # Initialize Jikan client
 jikan = Jikan()
-BASE_URL = "https://api.trace.moe"
+trace_moe = "https://api.trace.moe"
 
-# Base URL for waifu.im API
-WAIFU_BASE_URL = "https://api.waifu.im"
 
 @tool
-def anime(
+def jikan_anime(
     id: int, extension: Optional[str] = None, page: Optional[int] = None
 ) -> Dict[str, Any]:
     """Gets information on an anime by ID.
@@ -35,7 +32,7 @@ def anime(
 
 
 @tool
-def anime_episode_by_id(anime_id: int, episode_id: int) -> Dict[str, Any]:
+def jikan_anime_episode_by_id(anime_id: int, episode_id: int) -> Dict[str, Any]:
     """Gets specific episode information by anime ID and episode ID.
 
     Args:
@@ -49,7 +46,7 @@ def anime_episode_by_id(anime_id: int, episode_id: int) -> Dict[str, Any]:
 
 
 @tool
-def characters(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
+def jikan_characters(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
     """Gets information on a character by ID.
 
     Args:
@@ -63,7 +60,7 @@ def characters(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
 
 
 @tool
-def clubs(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
+def jikan_clubs(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
     """Gets information on a club by ID.
 
     Args:
@@ -77,7 +74,7 @@ def clubs(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
 
 
 @tool
-def genres(type: str, filter: Optional[str] = None) -> Dict[str, Any]:
+def jikan_genres(type: str, filter: Optional[str] = None) -> Dict[str, Any]:
     """Gets anime or manga genres.
 
     Args:
@@ -91,7 +88,7 @@ def genres(type: str, filter: Optional[str] = None) -> Dict[str, Any]:
 
 
 @tool
-def manga(
+def jikan_manga(
     id: int, extension: Optional[str] = None, page: Optional[int] = None
 ) -> Dict[str, Any]:
     """Gets information on a manga by ID.
@@ -108,7 +105,7 @@ def manga(
 
 
 @tool
-def people(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
+def jikan_people(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
     """Gets information on a person by ID.
 
     Args:
@@ -122,7 +119,7 @@ def people(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
 
 
 @tool
-def producers(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
+def jikan_producers(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
     """Gets anime by producer/studio/licensor.
 
     Args:
@@ -136,7 +133,7 @@ def producers(id: int, extension: Optional[str] = None) -> Dict[str, Any]:
 
 
 @tool
-def random(type: str) -> Dict[str, Any]:
+def jikan_random(type: str) -> Dict[str, Any]:
     """Gets a random resource of specified type.
 
     Args:
@@ -149,7 +146,7 @@ def random(type: str) -> Dict[str, Any]:
 
 
 @tool
-def recommendations(type: str, page: Optional[int] = None) -> Dict[str, Any]:
+def jikan_recommendations(type: str, page: Optional[int] = None) -> Dict[str, Any]:
     """Gets recommendations for anime or manga.
 
     Args:
@@ -163,7 +160,7 @@ def recommendations(type: str, page: Optional[int] = None) -> Dict[str, Any]:
 
 
 @tool
-def reviews(type: str, page: Optional[int] = None) -> Dict[str, Any]:
+def jikan_reviews(type: str, page: Optional[int] = None) -> Dict[str, Any]:
     """Gets reviews for anime or manga.
 
     Args:
@@ -177,7 +174,7 @@ def reviews(type: str, page: Optional[int] = None) -> Dict[str, Any]:
 
 
 @tool
-def schedules(
+def jikan_schedules(
     day: Optional[str] = None,
     page: Optional[int] = None,
     parameters: Optional[Dict[str, Any]] = None,
@@ -196,7 +193,7 @@ def schedules(
 
 
 @tool
-def search(
+def jikan_search(
     search_type: str,
     query: str,
     page: Optional[int] = None,
@@ -219,7 +216,7 @@ def search(
 
 
 @tool
-def season_history() -> Dict[str, Any]:
+def jikan_season_history() -> Dict[str, Any]:
     """Gets all years and their respective season names from MyAnimeList.
 
     Returns:
@@ -229,7 +226,7 @@ def season_history() -> Dict[str, Any]:
 
 
 @tool
-def seasons(
+def jikan_seasons(
     year: Optional[int] = None,
     season: Optional[str] = None,
     extension: Optional[str] = None,
@@ -254,7 +251,7 @@ def seasons(
 
 
 @tool
-def top(
+def jikan_top(
     type: str, page: Optional[int] = None, parameters: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Gets top items from MyAnimeList.
@@ -271,7 +268,7 @@ def top(
 
 
 @tool
-def user_by_id(user_id: int) -> Dict[str, Any]:
+def jikan_user_by_id(user_id: int) -> Dict[str, Any]:
     """Gets user information by MyAnimeList user ID.
 
     Args:
@@ -284,7 +281,7 @@ def user_by_id(user_id: int) -> Dict[str, Any]:
 
 
 @tool
-def users(
+def jikan_users(
     username: str,
     extension: Optional[str] = None,
     page: Optional[int] = None,
@@ -307,7 +304,7 @@ def users(
 
 
 @tool
-def watch(
+def jikan_watch(
     extension: str, parameters: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Gets information about recent/popular episodes or promotional videos.
@@ -323,7 +320,7 @@ def watch(
 
 
 @tool
-def search_by_image_url(
+def tracemoe_search_by_image_url(
     url: str, anilist_info: bool = True, cut_borders: bool = True
 ) -> Dict[str, Any]:
     """Search for anime scene by image URL.
@@ -342,13 +339,13 @@ def search_by_image_url(
         "cutBorders": str(cut_borders).lower(),
     }
 
-    response = requests.get(f"{BASE_URL}/search", params=params)
+    response = requests.get(f"{trace_moe}/search", params=params)
     response.raise_for_status()
     return response.json()
 
 
 @tool
-def search_by_image_file(
+def tracemoe_search_by_image_file(
     image_path: str, anilist_info: bool = True, cut_borders: bool = True
 ) -> Dict[str, Any]:
     """Search for anime scene by uploading an image file.
@@ -366,278 +363,9 @@ def search_by_image_file(
 
     data = {"image": image_data, "anilistInfo": anilist_info, "cutBorders": cut_borders}
 
-    response = requests.post(f"{BASE_URL}/search", json=data)
+    response = requests.post(f"{trace_moe}/search", json=data)
     response.raise_for_status()
     return response.json()
-
-@tool
-def get_waifu_tags() -> Dict[str, Any]:
-    """Gets all available tags/categories for waifu images.
-
-    Returns:
-        Dictionary containing all available tags and their information
-    """
-    try:
-        response = requests.get(f"{WAIFU_BASE_URL}/tags")
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        return {"error": f"Failed to fetch tags: {str(e)}"}
-
-
-@tool
-def get_waifu_tag_info(tag_name: str) -> Dict[str, Any]:
-    """Gets detailed information about a specific tag.
-
-    Args:
-        tag_name: Name of the tag to get information about
-
-    Returns:
-        Dictionary containing tag information
-    """
-    try:
-        response = requests.get(f"{WAIFU_BASE_URL}/tags/{tag_name}")
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        return {"error": f"Failed to fetch tag info for '{tag_name}': {str(e)}"}
-
-
-@tool
-def search_waifu_images(
-    included_tags: Optional[List[str]] = None,
-    excluded_tags: Optional[List[str]] = None,
-    is_nsfw: Optional[bool] = None,
-    gif: Optional[bool] = None,
-    order_by: Optional[str] = None,
-    orientation: Optional[str] = None,
-    many: Optional[bool] = False,
-    full: Optional[bool] = False,
-    width: Optional[str] = None,
-    height: Optional[str] = None,
-    byte_size: Optional[str] = None
-) -> Dict[str, Any]:
-    """Searches for waifu images based on specified criteria.
-
-    Args:
-        included_tags: List of tags that must be present in returned images
-        excluded_tags: List of tags that must NOT be present in returned images
-        is_nsfw: Filter by NSFW content (True/False/None for both)
-        gif: Filter by GIF format (True/False/None for both)
-        order_by: Order results by criteria ('FAVOURITES', 'UPLOADED_AT', 'RANDOM')
-        orientation: Image orientation ('LANDSCAPE', 'PORTRAIT', 'SQUARE')
-        many: Return multiple images (default: False for single image)
-        full: Return full image information (default: False)
-        width: Filter by image width ('>=800', '<=1920', etc.)
-        height: Filter by image height ('>=600', '<=1080', etc.)
-        byte_size: Filter by file size ('>=500KB', '<=5MB', etc.)
-
-    Returns:
-        Dictionary containing search results with image URLs and metadata
-    """
-    params = {}
-    
-    if included_tags:
-        params['included_tags'] = included_tags
-    if excluded_tags:
-        params['excluded_tags'] = excluded_tags
-    if is_nsfw is not None:
-        params['is_nsfw'] = str(is_nsfw).lower()
-    if gif is not None:
-        params['gif'] = str(gif).lower()
-    if order_by:
-        params['order_by'] = order_by
-    if orientation:
-        params['orientation'] = orientation
-    if many:
-        params['many'] = str(many).lower()
-    if full:
-        params['full'] = str(full).lower()
-    if width:
-        params['width'] = width
-    if height:
-        params['height'] = height
-    if byte_size:
-        params['byte_size'] = byte_size
-
-    try:
-        response = requests.get(f"{WAIFU_BASE_URL}/search", params=params)
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        return {"error": f"Failed to search images: {str(e)}"}
-
-
-@tool
-def get_random_waifu_image(
-    included_tags: Optional[List[str]] = None,
-    excluded_tags: Optional[List[str]] = None,
-    is_nsfw: Optional[bool] = False,
-    gif: Optional[bool] = None
-) -> Dict[str, Any]:
-    """Gets a random waifu image with optional filtering.
-
-    Args:
-        included_tags: List of tags that must be present
-        excluded_tags: List of tags that must NOT be present
-        is_nsfw: Include NSFW content (default: False)
-        gif: Filter by GIF format (True/False/None for both)
-
-    Returns:
-        Dictionary containing random image information
-    """
-    return search_waifu_images(
-        included_tags=included_tags,
-        excluded_tags=excluded_tags,
-        is_nsfw=is_nsfw,
-        gif=gif,
-        order_by='RANDOM',
-        many=False,
-        full=True
-    )
-
-
-@tool
-def get_multiple_waifu_images(
-    count: int = 5,
-    included_tags: Optional[List[str]] = None,
-    excluded_tags: Optional[List[str]] = None,
-    is_nsfw: Optional[bool] = False,
-    gif: Optional[bool] = None,
-    orientation: Optional[str] = None
-) -> Dict[str, Any]:
-    """Gets multiple waifu images at once.
-
-    Args:
-        count: Number of images to return (handled by making multiple requests)
-        included_tags: List of tags that must be present
-        excluded_tags: List of tags that must NOT be present
-        is_nsfw: Include NSFW content (default: False)
-        gif: Filter by GIF format (True/False/None for both)
-        orientation: Image orientation ('LANDSCAPE', 'PORTRAIT', 'SQUARE')
-
-    Returns:
-        Dictionary containing multiple image results
-    """
-    # Note: Waifu.im API typically returns one image per request
-    # This function makes the 'many' parameter True to try to get multiple images
-    return search_waifu_images(
-        included_tags=included_tags,
-        excluded_tags=excluded_tags,
-        is_nsfw=is_nsfw,
-        gif=gif,
-        orientation=orientation,
-        many=True,
-        full=True,
-        order_by='RANDOM'
-    )
-
-
-@tool
-def get_waifu_image_by_id(image_id: Union[int, str]) -> Dict[str, Any]:
-    """Gets a specific waifu image by its ID.
-
-    Args:
-        image_id: The ID of the specific image to retrieve
-
-    Returns:
-        Dictionary containing the specific image information
-    """
-    try:
-        # Use the search endpoint with specific file ID
-        params = {'included_files': [str(image_id)], 'full': 'true'}
-        response = requests.get(f"{WAIFU_BASE_URL}/search", params=params)
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        return {"error": f"Failed to fetch image with ID '{image_id}': {str(e)}"}
-
-
-@tool
-def get_popular_waifu_images(
-    included_tags: Optional[List[str]] = None,
-    excluded_tags: Optional[List[str]] = None,
-    is_nsfw: Optional[bool] = False,
-    orientation: Optional[str] = None
-) -> Dict[str, Any]:
-    """Gets popular/most favorited waifu images.
-
-    Args:
-        included_tags: List of tags that must be present
-        excluded_tags: List of tags that must NOT be present
-        is_nsfw: Include NSFW content (default: False)
-        orientation: Image orientation ('LANDSCAPE', 'PORTRAIT', 'SQUARE')
-
-    Returns:
-        Dictionary containing popular image results
-    """
-    return search_waifu_images(
-        included_tags=included_tags,
-        excluded_tags=excluded_tags,
-        is_nsfw=is_nsfw,
-        orientation=orientation,
-        order_by='FAVOURITES',
-        many=True,
-        full=True
-    )
-
-
-@tool
-def get_waifu_images_by_character(
-    character_name: str,
-    is_nsfw: Optional[bool] = False,
-    gif: Optional[bool] = None,
-    many: Optional[bool] = True
-) -> Dict[str, Any]:
-    """Gets waifu images featuring a specific character.
-
-    Args:
-        character_name: Name of the character to search for
-        is_nsfw: Include NSFW content (default: False)
-        gif: Filter by GIF format (True/False/None for both)
-        many: Return multiple images (default: True)
-
-    Returns:
-        Dictionary containing character-specific image results
-    """
-    # Assuming character names are used as tags
-    return search_waifu_images(
-        included_tags=[character_name.lower()],
-        is_nsfw=is_nsfw,
-        gif=gif,
-        many=many,
-        full=True,
-        order_by='FAVOURITES'
-    )
-
-
-@tool
-def get_waifu_images_by_anime(
-    anime_name: str,
-    is_nsfw: Optional[bool] = False,
-    gif: Optional[bool] = None,
-    many: Optional[bool] = True
-) -> Dict[str, Any]:
-    """Gets waifu images from a specific anime series.
-
-    Args:
-        anime_name: Name of the anime series to search for
-        is_nsfw: Include NSFW content (default: False)
-        gif: Filter by GIF format (True/False/None for both)
-        many: Return multiple images (default: True)
-
-    Returns:
-        Dictionary containing anime-specific image results
-    """
-    # Assuming anime names are used as tags
-    return search_waifu_images(
-        included_tags=[anime_name.lower().replace(' ', '-')],
-        is_nsfw=is_nsfw,
-        gif=gif,
-        many=many,
-        full=True,
-        order_by='FAVOURITES'
-    )
 
 
 def get_all_tools() -> List:
@@ -647,34 +375,25 @@ def get_all_tools() -> List:
         List of all available tools
     """
     return [
-        anime,
-        anime_episode_by_id,
-        characters,
-        clubs,
-        genres,
-        manga,
-        people,
-        producers,
-        random,
-        recommendations,
-        reviews,
-        schedules,
-        search,
-        season_history,
-        seasons,
-        top,
-        user_by_id,
-        users,
-        watch,
-        search_by_image_url,
-        search_by_image_file,
-	get_waifu_tags,
-        get_waifu_tag_info,
-        search_waifu_images,
-        get_random_waifu_image,
-        get_multiple_waifu_images,
-        get_waifu_image_by_id,
-        get_popular_waifu_images,
-        get_waifu_images_by_character,
-        get_waifu_images_by_anime,
+        jikan_anime,
+        jikan_anime_episode_by_id,
+        jikan_characters,
+        jikan_clubs,
+        jikan_genres,
+        jikan_manga,
+        jikan_people,
+        jikan_producers,
+        jikan_random,
+        jikan_recommendations,
+        jikan_reviews,
+        jikan_schedules,
+        jikan_search,
+        jikan_season_history,
+        jikan_seasons,
+        jikan_top,
+        jikan_user_by_id,
+        jikan_users,
+        jikan_watch,
+        tracemoe_search_by_image_url,
+        tracemoe_search_by_image_file,
     ]
