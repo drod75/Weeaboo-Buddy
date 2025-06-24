@@ -3,7 +3,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.mongodb import MongoDBSaver
-from langchain_core.prompts import PromptTemplate
 from pymongo import MongoClient
 from rich.console import Console
 from rich.markdown import Markdown
