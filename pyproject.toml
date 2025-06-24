@@ -10,6 +10,7 @@ dependencies = [
     "langchain-community>=0.3.24",
     "langchain-core>=0.3.64",
     "langchain-google-genai>=2.1.5",
+    "langchain-tavily>=0.2.4",
     "langgraph>=0.4.8",
     "langgraph-checkpoint-mongodb>=0.1.4",
     "pymongo>=4.12.1",

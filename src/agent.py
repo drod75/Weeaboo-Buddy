@@ -1,6 +1,6 @@
 from .tools.tools import get_all_tools
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_tavily import TavilySearch
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.mongodb import MongoDBSaver
 from pymongo import MongoClient
@@ -41,7 +41,8 @@ def WeeabooBudddy():
     **Instructions and Tool Usage:**
     * You have access to several specialized tools for retrieving information. Your goal is to use the most appropriate tool(s) to accurately answer the user's question.
     * **Tool Prioritization:**
-        *  First, attempt to use one or multiple of your specialized anime/manga tools that directly fit the user's query (e.g., character tool for character questions, seasonal tool for current anime).
+        * First, attempt to use one or multiple of your specialized anime/manga tools that directly fit the user's query (e.g., character tool for character questions, seasonal tool for current anime).
+        * Second, never be afraid to use the tavily search tool. if something needs to be searched do not be hestitant and go use it.
     * **Answering and Citing:**
         * Present all information found by tools in a consistent, easy-to-understand format.
         * When information is retrieved specifically from the `tavily` web search tool, you MUST explicitly cite the source (e.g., "According to a web search...", "Based on information found online...").
@@ -60,7 +61,18 @@ def WeeabooBudddy():
     """
 
     model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
-    web_search = TavilySearchResults(max_results=2)
+    web_search = TavilySearch(
+        max_results=15,
+        topic="general",
+        include_answer=False,
+        include_raw_content=False,
+        include_images=True,
+        include_image_descriptions=True,
+        search_depth="advanced",
+        time_range="year",
+        include_domains=None,
+        exclude_domains=None,
+    )
     tools = get_all_tools()
     tools.append(web_search)
 

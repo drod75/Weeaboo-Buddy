@@ -18,6 +18,9 @@ if "chat_sessions" not in st.session_state:
     st.session_state.chat_sessions = {}
 if "current_session" not in st.session_state:
     st.session_state.current_session = "default"
+# Add a new session state variable to track if the AI is thinking
+if "processing" not in st.session_state:
+    st.session_state.processing = False
 
 # Sidebar with enhanced controls
 with st.sidebar:
@@ -146,48 +149,58 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Chat input
-message_count = len(st.session_state.messages)
-if prompt := st.chat_input("What would you like to know about anime/manga?"):
-    # Store as simple dict with string content
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    message_count = len(st.session_state.messages)
-    with st.chat_message("user"):
-        st.markdown(prompt)
+if not st.session_state.processing:
+    if prompt := st.chat_input("What would you like to know about anime/manga?"):
+        # Store as simple dict with string content
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
+        # Set processing to True to hide the input and show a spinner
+        st.session_state.processing = True
+        st.rerun()
+
+if st.session_state.processing:
     with st.chat_message("assistant"):
-        config = {"configurable": {"thread_id": st.session_state.current_session}}
+        with st.spinner("Thinking..."):
+            config = {"configurable": {"thread_id": st.session_state.current_session}}
 
-        # Convert session state messages to proper LangChain message format
-        messages = []
-        for msg in st.session_state.messages:
-            if msg["role"] == "user":
-                messages.append(HumanMessage(content=msg["content"]))
-            elif msg["role"] == "assistant":
-                messages.append(AIMessage(content=msg["content"]))
+            # Convert session state messages to proper LangChain message format
+            messages = []
+            for msg in st.session_state.messages:
+                if msg["role"] == "user":
+                    messages.append(HumanMessage(content=msg["content"]))
+                elif msg["role"] == "assistant":
+                    messages.append(AIMessage(content=msg["content"]))
 
-        # Use placeholder for response collection
-        response_placeholder = st.empty()
-        full_response = ""
+            # Use placeholder for response collection
+            response_placeholder = st.empty()
+            full_response = ""
 
-        # Stream the response
-        try:
-            for chunk in agent.stream(
-                {"messages": messages},
-                config,  # type: ignore
-                stream_mode="values",
-            ):
-                # Extract the actual content from the chunk
-                if chunk.get("messages") and len(chunk["messages"]) > 0:
-                    last_message = chunk["messages"][-1]
-                    if hasattr(last_message, "content") and last_message.type == "ai":
-                        full_response = last_message.content
-                        response_placeholder.markdown(full_response)
+            # Stream the response
+            try:
+                for chunk in agent.stream(
+                    {"messages": messages},
+                    config,  # type: ignore
+                    stream_mode="values",
+                ):
+                    # Extract the actual content from the chunk
+                    if chunk.get("messages") and len(chunk["messages"]) > 0:
+                        last_message = chunk["messages"][-1]
+                        if (
+                            hasattr(last_message, "content")
+                            and last_message.type == "ai"
+                        ):
+                            full_response = last_message.content
+                            response_placeholder.markdown(full_response)
 
-            response = full_response
-        except Exception as e:
-            response = f"Sorry, I encountered an error: {str(e)}"
-            st.error(response)
+                response = full_response
+            except Exception as e:
+                response = f"Sorry, I encountered an error: {str(e)}"
+                st.error(response)
 
-    # Store assistant response as simple dict with string content
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    message_count = len(st.session_state.messages)
+            # Store assistant response as simple dict with string content
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            # Set processing to False to show the input again
+            st.session_state.processing = False
+            st.rerun()
