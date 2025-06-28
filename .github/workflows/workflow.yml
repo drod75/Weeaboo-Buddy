@@ -39,7 +39,6 @@ jobs:
         src: >-
           app.py
           src/app/authentication.py
-          src/app/content.py
           src/agent/agent.py
           src/agent/tools/tools.py
         args: "format --check"
