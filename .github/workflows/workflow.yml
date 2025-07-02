@@ -26,8 +26,10 @@ jobs:
         # REVERTED: Explicitly lists every file to be scanned.
         src: >-
           app.py
+          pages/account.py
+          pages/chat_options.py
+          pages/chat.py
           src/app/authentication.py
-          src/app/content.py
           src/agent/agent.py
           src/agent/tools/tools.py
         args: "check --output-format=github"
@@ -38,6 +40,9 @@ jobs:
         # REVERTED: Explicitly lists every file to be scanned.
         src: >-
           app.py
+          pages/account.py
+          pages/chat_options.py
+          pages/chat.py
           src/app/authentication.py
           src/agent/agent.py
           src/agent/tools/tools.py
