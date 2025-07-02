@@ -7,7 +7,7 @@ from typing import Dict, Any, Optional, List
 from langchain_core.tools import tool
 from jikanpy import Jikan
 import requests
-import base64
+import json
 
 # Initialize Jikan client
 jikan = Jikan()
@@ -320,52 +320,46 @@ def jikan_watch(
 
 
 @tool
-def tracemoe_search_by_image_url(
-    url: str, anilist_info: bool = True, cut_borders: bool = True
-) -> Dict[str, Any]:
-    """Search for anime scene by image URL.
+def trace_moe_search(
+    path: str,
+    is_url: bool = False,
+    upload_file: bool = False,
+    cut_black_borders: bool = True,
+    include_anilist_info: bool = True,
+) -> str:
+    """
+    Searches for an anime scene using an image URL or a base64 encoded string.
+    This tool is adapted from the user-provided code snippet.
 
     Args:
-        url: URL of the image to search
-        anilist_info: Include AniList info in response (default: True)
-        cut_borders: Automatically crop black borders (default: True)
+        path: Image URL or base64 encoded image string.
+        is_url: Set to True if the path is a URL.
+        upload_file: This parameter is not used as the image data is handled directly as a base64 string.
+        cut_black_borders: Automatically crops black borders from the image.
+        include_anilist_info: Includes additional anime information from AniList.
 
     Returns:
-        Dictionary containing search results with anime information
+        A JSON string containing the search results or a descriptive error message.
     """
-    params = {
-        "url": url,
-        "anilistInfo": str(anilist_info).lower(),
-        "cutBorders": str(cut_borders).lower(),
-    }
+    url = "https://api.trace.moe/search"
+    params = {}
 
-    response = requests.get(f"{trace_moe}/search", params=params)
+    if cut_black_borders:
+        params["cutBorders"] = ""
+    if include_anilist_info:
+        params["anilistInfo"] = ""
+
+    if is_url:
+        params["url"] = path
+        response = requests.get(url, params=params)
+    else:
+        f = open(path, "rb")
+        response = requests.post(url, files={"image": f}, params=params)
+
     response.raise_for_status()
-    return response.json()
-
-
-@tool
-def tracemoe_search_by_image_file(
-    image_path: str, anilist_info: bool = True, cut_borders: bool = True
-) -> Dict[str, Any]:
-    """Search for anime scene by uploading an image file.
-
-    Args:
-        image_path: Path to the image file to search
-        anilist_info: Include AniList info in response (default: True)
-        cut_borders: Automatically crop black borders (default: True)
-
-    Returns:
-        Dictionary containing search results with anime information
-    """
-    with open(image_path, "rb") as image_file:
-        image_data = base64.b64encode(image_file.read()).decode("utf-8")
-
-    data = {"image": image_data, "anilistInfo": anilist_info, "cutBorders": cut_borders}
-
-    response = requests.post(f"{trace_moe}/search", json=data)
-    response.raise_for_status()
-    return response.json()
+    data = response.json()
+    result = data.get("result", [])
+    return json.dumps(result)
 
 
 def get_all_tools() -> List:
@@ -394,6 +388,5 @@ def get_all_tools() -> List:
         jikan_user_by_id,
         jikan_users,
         jikan_watch,
-        tracemoe_search_by_image_url,
-        tracemoe_search_by_image_file,
+        # trace_moe_search,
     ]

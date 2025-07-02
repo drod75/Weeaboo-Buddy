@@ -17,7 +17,7 @@ def init_connection():
     return supabase
 
 
-# --- Authentication Functions (Error handling reverted) ---
+# --- Authentication Functions ---
 
 
 def sign_up(email, password):
@@ -26,7 +26,6 @@ def sign_up(email, password):
         supabase = init_connection()
         user = supabase.auth.sign_up({"email": email, "password": password})
         return user
-    # REVERTED: Changed back to generic Exception handling.
     except Exception as e:
         st.error(f"Registration failed: {e}")
         return None
@@ -40,7 +39,6 @@ def sign_in(email, password):
             {"email": email, "password": password}
         )
         return user
-    # REVERTED: Changed back to generic Exception handling.
     except Exception as e:
         st.error(f"Login failed: {e}")
         return None
@@ -65,60 +63,68 @@ def is_valid_email(email):
     return re.match(pattern, email) is not None
 
 
+def update_user(new_email, new_password):
+    """Updates the user's email and password."""
+    try:
+        supabase = init_connection()
+        user_attributes = {}
+        if new_email:
+            user_attributes["email"] = new_email
+        if new_password:
+            user_attributes["password"] = new_password
+        user = supabase.auth.update_user(user_attributes)
+        return user
+    except Exception as e:
+        st.error(f"Update failed: {e}")
+        return None
+
+
 # --- Main UI Function ---
 
 
 def app_authentication():
     """Displays a customized authentication UI and handles logic."""
+    st.title("🎌 Weeaboo-Buddy")
 
     st.caption("Please log in or sign up to continue")
 
-    with st.container(border=True):
-        with st.form("auth_form", clear_on_submit=False):
-            email = st.text_input("Email")
-            password = st.text_input("Password", type="password")
+    with st.form("auth_form", clear_on_submit=False):
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
 
-            col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-            with col1:
-                login_button = st.form_submit_button("Log In", use_container_width=True)
-            with col2:
-                signup_button = st.form_submit_button(
-                    "Sign Up", use_container_width=True, type="secondary"
-                )
+        with col1:
+            login_button = st.form_submit_button("Log In", use_container_width=True)
+        with col2:
+            signup_button = st.form_submit_button(
+                "Sign Up", use_container_width=True, type="secondary"
+            )
 
-            if login_button:
-                if not email or not password:
-                    st.error("Please enter both email and password.")
-                elif not is_valid_email(email):
-                    st.error("Please enter a valid email address.")
-                else:
-                    with st.spinner("Logging in..."):
-                        # REVERTED: Logic updated to match original return style.
-                        user = sign_in(email, password)
-                        if user and user.user:
-                            st.session_state.user_email = user.user.email
-                            st.success(f"Welcome back, {email}!")
-                            st.rerun()
+        if login_button:
+            if not email or not password:
+                st.error("Please enter both email and password.")
+            elif not is_valid_email(email):
+                st.error("Please enter a valid email address.")
+            else:
+                with st.spinner("Logging in..."):
+                    user = sign_in(email, password)
+                    if user and user.user:
+                        st.session_state.user_email = user.user.email
+                        st.success(f"Welcome back, {email}!")
+                        st.rerun()
 
-            if signup_button:
-                if not email or not password:
-                    st.error("Please enter both email and password.")
-                elif not is_valid_email(email):
-                    st.error("Please enter a valid email address.")
-                elif len(password) < 6:
-                    st.error("Password must be at least 6 characters long.")
-                else:
-                    with st.spinner("Creating your account..."):
-                        # REVERTED: Logic updated to match original return style.
-                        user = sign_up(email, password)
-                        if user and user.user:
-                            st.success(
-                                "Registration successful! Please log in to continue."
-                            )
-
-        st.divider()
-        st.markdown(
-            "<div style='text-align: center;'> <a href='#' target='_self'>Forgot your password?</a></div>",
-            unsafe_allow_html=True,
-        )
+        if signup_button:
+            if not email or not password:
+                st.error("Please enter both email and password.")
+            elif not is_valid_email(email):
+                st.error("Please enter a valid email address.")
+            elif len(password) < 6:
+                st.error("Password must be at least 6 characters long.")
+            else:
+                with st.spinner("Creating your account..."):
+                    user = sign_up(email, password)
+                    if user and user.user:
+                        st.success(
+                            "Registration successful! Please log in to continue."
+                        )
