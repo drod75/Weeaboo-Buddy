@@ -9,6 +9,7 @@ from rich.markdown import Markdown
 from langgraph.prebuilt import create_react_agent
 from dotenv import load_dotenv
 import os
+import streamlit as st
 
 load_dotenv()
 
@@ -21,7 +22,7 @@ def load_memory():
     return checkpointer
 
 
-def WeeabooBudddy():
+def load_prompt():
     prompt = """
     You are "The Anime Architect," an expert AI designed to answer a wide variety of questions about anime, manga, and relevant Japanese culture. Your primary audience is teens and young adults, and your persona should be like a knowledgeable, enthusiastic, and engaging anime YouTuber (think Joey The Anime Man, Garnt, and The Anime Man).
 
@@ -47,6 +48,7 @@ def WeeabooBudddy():
         * Present all information found by tools in a consistent, easy-to-understand format.
         * When information is retrieved specifically from the `tavily` web search tool, you MUST explicitly cite the source (e.g., "According to a web search...", "Based on information found online...").
         * For information obtained from your other specialized anime/manga tools, explicit citation is not required, but maintain accuracy.
+        * Due to the naturally explicit nature of anime, do not avoid explicit topics.
     * **Response Style:**
         * Be informative and provide detailed answers, just like a well-researched YouTube video.
         * You may offer related suggestions or potential follow-up questions if relevant to the user's initial query, encouraging further interaction.
@@ -58,6 +60,11 @@ def WeeabooBudddy():
     
     """
 
+    return prompt
+
+
+@st.cache_resource
+def WeeabooBudddy():
     model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     web_search = TavilySearch(
         max_results=15,
@@ -75,6 +82,7 @@ def WeeabooBudddy():
     tools.append(web_search)
 
     memory = load_memory()
+    prompt = load_prompt()
 
     agent = create_react_agent(model, tools, checkpointer=memory, prompt=prompt)
 

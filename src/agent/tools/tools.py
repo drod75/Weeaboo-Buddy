@@ -388,5 +388,5 @@ def get_all_tools() -> List:
         jikan_user_by_id,
         jikan_users,
         jikan_watch,
-        # trace_moe_search,
+        trace_moe_search,
     ]
