@@ -70,9 +70,77 @@ To get a local copy of Weeaboo-Buddy up and running locally follow these steps:
     ```sh
     git -v | git --version
     ```
-    
+
 ### Setup
-tbd
+1. Navigate to the directory where you want to clone/run/save the application:
+    ```sh
+    cd example_directory
+    ```
+2. Clone the repository:
+    ```sh
+    git clone https://github.com/drod75/Weeaboo-Buddy.git
+    ```
+3. Navigate to the project directory:
+    ```sh
+    cd Weeaboo-Buddy
+    ```
+4. Next, create a Python virtual environment in the cloned project directory:
+    ```sh
+    python3.12 -m venv .venv
+    ```
+5. Activate the virtual environment (Windows OR Mac/Linux):
+    1. Windows
+        ```sh
+          .\.venv\Scripts\activate
+        ```
+    2. Mac/Linux
+        ```sh
+          source .venv/bin/activate
+        ```
+6. Install the python dependencies:
+    ```sh
+    pip install -r requirements.txt
+    ```
+7. Set up a Gemini API key:
+    - Inside the root directory, create a ``.env`` file. Inside the ``.env`` file, write:
+        ```sh
+        GOOGLE_API_KEY = "your-api-key"
+        ```
+    - Replace ``your-api-key`` with your Gemini API key.
+8. Set up a Supabase API key and URL:
+    - Inside the root directory, create a ``.env`` file. Inside the ``.env`` file, write:
+        ```sh
+        SUPABASE_KEY = "your-api-key"
+        SUPABASE_URL = "your-url"
+        ```
+    - Replace ``your-api-key``/``your-url`` with your supabase credentials.
+9. Set up a MongoDB URI:
+    - Inside the root directory, create a ``.env`` file. Inside the ``.env`` file, write:
+        ```sh
+        MONGO_URI = "your-uri"
+        ```
+    - Replace ``your-uri`` with your Mongo URI.
+10. Set up a Taviliy API key:
+    - Inside the root directory, create a ``.env`` file. Inside the ``.env`` file, write:
+        ```sh
+        TAVILY_API_KEY = "your-api-key"
+        ```
+    - Replace ``your-api-key`` with your Tavily API key.
+
+### Usage
+1. Run the application:
+    ```sh
+    # activate backend server
+    streamlit run app.py
+    ```
+    
+2. Options:
+    - Log In/Register
+    - Chat with the Agent
+    - See user chat details
+    - Change user details
+
+<p align="right"><a href="#readme-top">Back to top</a></p>
 
 ## Demo
 tbd
