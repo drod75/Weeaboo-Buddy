@@ -1,7 +1,6 @@
 from .tools.tools import get_all_tools
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_tavily import TavilySearch
-from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.mongodb import MongoDBSaver
 from pymongo import MongoClient
 from langgraph.prebuilt import create_react_agent
@@ -11,6 +10,7 @@ import streamlit as st
 
 load_dotenv()
 
+
 @st.cache_resource
 def load_memory():
     cs = os.getenv("MONGO_URI")
@@ -18,6 +18,7 @@ def load_memory():
     checkpointer = MongoDBSaver(client)
 
     return checkpointer
+
 
 @st.cache_resource
 def load_prompt():
@@ -85,5 +86,3 @@ def WeeabooBudddy():
     agent = create_react_agent(model, tools, checkpointer=memory, prompt=prompt)
 
     return agent
-
-

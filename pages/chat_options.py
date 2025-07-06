@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+from src.agent.agent import WeeabooBudddy
 
 
 st.title("Chat Options")
@@ -20,6 +21,35 @@ def cleanup_temp_files():
             except Exception as e:
                 st.error(f"Error cleaning up temp file {temp_file}: {str(e)}")
         st.session_state.temp_files = []
+
+
+def clear_thread_history():
+    """Clear the user's thread history from LangGraph state/MongoDB"""
+    try:
+        # Get the agent instance
+        agent = WeeabooBudddy()
+
+        # Get the thread ID (user email)
+        thread_id = st.session_state.get("user_email", "default")
+
+        # Configure for the specific thread
+        config = {"configurable": {"thread_id": thread_id}}
+
+        # Get the current state to check if it exists
+        current_state = agent.get_state(config)
+
+        if current_state and hasattr(current_state, "values") and current_state.values:
+            # Clear the state by updating it with empty messages
+            agent.update_state(config, {"messages": []})
+            st.success("Thread history cleared from database!")
+            return True
+        else:
+            st.info("No thread history found in database to clear.")
+            return True
+
+    except Exception as e:
+        st.error(f"Error clearing thread history: {str(e)}")
+        return False
 
 
 st.header("Memory Settings")
@@ -60,8 +90,8 @@ if temp_files_count > 0:
                 try:
                     size_bytes = os.path.getsize(temp_file)
                     file_size = f" ({size_bytes} bytes)"
-                except Exception as e:
-		    file_size = "(size unknown), " + e
+                except Exception:
+                    file_size = "(size unknown), "
 
             st.code(f"{i + 1}. {temp_file}{file_size}")
             if not file_exists:
@@ -141,14 +171,44 @@ st.divider()
 st.header("Clear Chat")
 if st.session_state.get("messages"):
     st.warning(
-        "This will permanently delete your chat history and clean up temporary files."
+        "⚠️ **This will permanently delete your chat history from all devices and clean up temporary files.**"
     )
+    st.caption(
+        "This action cannot be undone and will affect your chat history across all devices."
+    )
+
     if st.button("🗑️ Clear All Chat History", type="secondary"):
-        # Clean up temp files first
-        cleanup_temp_files()
-        # Clear messages
-        st.session_state.messages = []
-        st.success("Chat history cleared!")
+        with st.spinner("Clearing chat history..."):
+            # Clean up temp files first
+            cleanup_temp_files()
+
+            # Clear thread history from database
+            thread_cleared = clear_thread_history()
+
+            if thread_cleared:
+                # Clear local session messages
+                st.session_state.messages = []
+
+                # Reset history loaded flag so it can be reloaded (empty) next time
+                if "history_loaded" in st.session_state:
+                    st.session_state.history_loaded = False
+
+                st.success("✅ Chat history completely cleared from all devices!")
+            else:
+                st.error(
+                    "❌ Failed to clear thread history from database. Local session cleared."
+                )
+                # Still clear local session even if database clearing failed
+                st.session_state.messages = []
+
         st.rerun()
 else:
     st.caption("No chat history to clear.")
+
+st.divider()
+
+# Thread Information (for debugging/info)
+st.header("Thread Information")
+thread_id = st.session_state.get("user_email", "default")
+st.code(f"Thread ID: {thread_id}")
+st.caption("Your chat history is stored using your email as the thread identifier.")
