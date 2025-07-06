@@ -39,7 +39,12 @@
 One day while I was sitting by my desk, I pondered about the next project I wanted to make, I started to think about the various topics I wanted to work on and two things came to mind, Agents and a personal interest. I began to think about what in my life could use and benefit from an AI Agent powered by an LLM, and thought of one thing immediately, anime. I then decided my project would be an AI Anime helper, fitted with several tools that would help anyone curious about various aspects of anime have a one-stop shop that would elimnate the need of having to do in depth research themselves, or go down rabbit holes they would not want to or have the time to go down. I hope you enjoy, and please feel free to leave any issue you have so I can improve this tool, thank you!
  
 ## Features
-tbd
+- User Authentication!
+- Agent Chatbot!
+- Image Input Support!
+- Device Chat Sync!
+- Chat Export!
+- Chat History Clear!
 
 ### Built With
 [![Python][Python]][Python-url]
@@ -50,9 +55,9 @@ tbd
 [![APIs][APIs]][APIs-url]
 [![Streamlit][Streamlit]][Streamlit-url]
 
-### Workflow
+### App Flow
 <div align="center">
-  <img src="./public/workflow.png" alt='flowchart' width=800>
+  <img src="./public/diagram.png" alt='flowchart' width=800>
 </div> <br>
 <p align="right"><a href="#readme-top">Back to top</a></p>
 
