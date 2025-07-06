@@ -1,6 +1,5 @@
 import streamlit as st
 import json
-from rich import Console
 import os
 
 
@@ -62,9 +61,7 @@ if temp_files_count > 0:
                     size_bytes = os.path.getsize(temp_file)
                     file_size = f" ({size_bytes} bytes)"
                 except Exception as e:
-                    console = Console()
-                    console.print(e)
-                    file_size = " (size unknown)"
+		    file_size = "(size unknown), " + e
 
             st.code(f"{i + 1}. {temp_file}{file_size}")
             if not file_exists:

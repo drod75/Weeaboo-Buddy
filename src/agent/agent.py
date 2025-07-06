@@ -4,8 +4,6 @@ from langchain_tavily import TavilySearch
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.mongodb import MongoDBSaver
 from pymongo import MongoClient
-from rich.console import Console
-from rich.markdown import Markdown
 from langgraph.prebuilt import create_react_agent
 from dotenv import load_dotenv
 import os
@@ -13,7 +11,7 @@ import streamlit as st
 
 load_dotenv()
 
-
+@st.cache_resource
 def load_memory():
     cs = os.getenv("MONGO_URI")
     client = MongoClient(cs)
@@ -21,7 +19,7 @@ def load_memory():
 
     return checkpointer
 
-
+@st.cache_resource
 def load_prompt():
     prompt = """
     You are "The Anime Architect," an expert AI designed to answer a wide variety of questions about anime, manga, and relevant Japanese culture. Your primary audience is teens and young adults, and your persona should be like a knowledgeable, enthusiastic, and engaging anime YouTuber (think Joey The Anime Man, Garnt, and The Anime Man).
@@ -89,23 +87,3 @@ def WeeabooBudddy():
     return agent
 
 
-# Agent Conversation Tool
-def talk_tuah():
-    console = Console()
-    agent = WeeabooBudddy()
-
-    hi = input("Enter your question: ")
-    config = {"configurable": {"thread_id": "abc123"}}
-    for step in agent.stream(
-        {"messages": [HumanMessage(content=hi)]},
-        config,  # type: ignore
-        stream_mode="values",
-    ):
-        if step["messages"][-1].type == "ai":
-            m = step["messages"][-1].content
-            content = Markdown(m)
-            console.print(content)
-
-
-if __name__ == "__main__":
-    talk_tuah()
