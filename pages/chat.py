@@ -5,7 +5,6 @@ import base64
 import tempfile
 import os
 
-from rich.console import Console
 
 st.title("🎌 Weeaboo-Buddy")
 agent = WeeabooBudddy()
@@ -17,6 +16,61 @@ if "processing" not in st.session_state:
     st.session_state.processing = False
 if "temp_files" not in st.session_state:
     st.session_state.temp_files = []
+if "history_loaded" not in st.session_state:
+    st.session_state.history_loaded = False
+
+
+def load_chat_history():
+    """Load chat history from LangGraph state for cross-device sync"""
+    if st.session_state.history_loaded:
+        return
+
+    try:
+        # Get the thread ID (user email)
+        thread_id = st.session_state.get("user_email", "default")
+
+        # Configure for getting state
+        config = {"configurable": {"thread_id": thread_id}}
+
+        # Get the current state from LangGraph
+        state = agent.get_state(config)
+
+        # Extract messages from the state
+        if state and hasattr(state, "values") and "messages" in state.values:
+            langgraph_messages = state.values["messages"]
+
+            # Convert LangGraph messages to Streamlit chat format
+            converted_messages = []
+            for msg in langgraph_messages:
+                if hasattr(msg, "type") and hasattr(msg, "content"):
+                    # Convert LangGraph message types to chat roles
+                    if msg.type == "human":
+                        role = "user"
+                    elif msg.type == "ai":
+                        role = "assistant"
+                    else:
+                        continue  # Skip system messages or other types
+
+                    # Handle both string and multimodal content
+                    content = msg.content
+                    if isinstance(content, str):
+                        converted_messages.append({"role": role, "content": content})
+                    elif isinstance(content, list):
+                        # Handle multimodal content (text + images)
+                        converted_messages.append({"role": role, "content": content})
+
+            # Only update if we have messages and haven't loaded before
+            if converted_messages and not st.session_state.messages:
+                st.session_state.messages = converted_messages
+                st.success(
+                    f"Loaded {len(converted_messages)} messages from chat history!"
+                )
+
+        st.session_state.history_loaded = True
+
+    except Exception as e:
+        st.error(f"Error loading chat history: {str(e)}")
+        st.session_state.history_loaded = True  # Mark as loaded to prevent retry loops
 
 
 def save_uploaded_file(uploaded_file):
@@ -98,14 +152,13 @@ def create_multimodal_message_content(text, images, image_paths):
 def cleanup_temp_files():
     """Clean up temporary files"""
     for temp_file in st.session_state.temp_files:
-        try:
-            if os.path.exists(temp_file):
-                os.unlink(temp_file)
-        except Exception as e:
-            console = Console()
-            console.print(f"Error cleaning up temp file {temp_file}: {str(e)}")
+        if os.path.exists(temp_file):
+            os.unlink(temp_file)
     st.session_state.temp_files = []
 
+
+# Load chat history from LangGraph state when page loads
+load_chat_history()
 
 # --- Main Chat Interface ---
 if not st.session_state.messages:
@@ -148,8 +201,6 @@ if not st.session_state.processing:
 
                 # Display and process each uploaded file
                 for image_file in uploaded_files:
-                    console = Console()
-                    console.print(f"Processing image: {image_file.name}")
                     st.image(image_file, caption=f"Uploaded: {image_file.name}")
 
                     # Save file and get path
@@ -164,9 +215,6 @@ if not st.session_state.processing:
                 )
             else:
                 message_content = user_text
-
-            console = Console()
-            console.print(message_content)
 
             # Store message in session state
             st.session_state.messages.append(
