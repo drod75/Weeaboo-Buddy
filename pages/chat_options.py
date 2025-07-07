@@ -56,8 +56,6 @@ def clear_thread_history():
 def update_theme():
     # The value from the selectbox is automatically stored in its key
     st.session_state.theme = st.session_state.theme_selector
-    # Explicitly trigger a rerun to ensure the app updates.
-    st.rerun()
 
 
 # Set a default theme if one doesn't exist in the session state

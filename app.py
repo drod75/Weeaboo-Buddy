@@ -2,6 +2,10 @@ import streamlit as st
 from src.app.authentication import app_authentication
 from src.app.themes import CUSTOM_THEMES  # Import themes
 
+st.set_page_config(
+    page_title="Weeaboo Buddy", page_icon="🤖", initial_sidebar_state="collapsed"
+)
+
 # --- Apply The Selected Theme ---
 # This must be the first Streamlit command in your app.
 
