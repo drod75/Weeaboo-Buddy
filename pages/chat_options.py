@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import os
 from src.agent.agent import WeeabooBudddy
-
+from src.app.themes import ALL_THEMES  # Import your presets
 
 st.title("Chat Options")
 
@@ -51,6 +51,27 @@ def clear_thread_history():
         st.error(f"Error clearing thread history: {str(e)}")
         return False
 
+
+# This callback function runs immediately when the user makes a selection
+def update_theme():
+    # The value from the selectbox is automatically stored in its key
+    st.session_state.theme = st.session_state.theme_selector
+
+
+# Set a default theme if one doesn't exist in the session state
+if "theme" not in st.session_state:
+    st.session_state.theme = "Streamlit Light"
+
+# The selectbox now uses a `key` and an `on_change` callback
+st.selectbox(
+    label="Choose a Theme",
+    options=ALL_THEMES,
+    key="theme_selector",  # The key to access the widget's state
+    on_change=update_theme,  # The function to call when the value changes
+    index=ALL_THEMES.index(st.session_state.theme),  # Set default value
+)
+
+st.info("You can add up to 20 different themes for users to choose from!")
 
 st.header("Memory Settings")
 
