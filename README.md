@@ -1,7 +1,6 @@
 <a name="readme-top"></a>
 
 <div align="center">
-  <img src="./public/Logo.png" alt='logo' width=300>
   <h1>Weeaboo-Buddy</h1>
 </div> <br>
 
@@ -148,12 +147,12 @@ To get a local copy of Weeaboo-Buddy up and running locally follow these steps:
 <p align="right"><a href="#readme-top">Back to top</a></p>
 
 ## Demo
-tbd
+A video to how the site works, and every feature that is stable and available so far is listed below!
+[Demo Link](tbd)
 
 ## Contributing
 We like open-source and want to develop practical applications for real-world problems. However, individual strength is limited. So, any kinds of contribution is welcome, such as:
 - New features
-- New models (your fine-tuned models)
 - Bug fixes
 - Typo fixes
 - Suggestions
