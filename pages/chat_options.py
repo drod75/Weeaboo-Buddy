@@ -71,7 +71,7 @@ st.selectbox(
     index=ALL_THEMES.index(st.session_state.theme),  # Set default value
 )
 
-st.info("You can add up to 20 different themes for users to choose from!")
+st.info("This feature is still being worked on, sometimes you may need to click twice.")
 
 st.header("Memory Settings")
 
