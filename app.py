@@ -32,12 +32,13 @@ elif theme_name in CUSTOM_THEMES:
     for key, value in theme_config.items():
         st._config.set_option(f"theme.{key}", value)
 
+
 # --- Session Management ---
 def check_authentication():
     """Check if user is authenticated, either from session state or Supabase session."""
     if "user_email" not in st.session_state:
         st.session_state.user_email = None
-    
+
     # If no user in session state, check Supabase session
     if not st.session_state.user_email:
         try:
@@ -48,8 +49,9 @@ def check_authentication():
                 return True
         except Exception:
             pass
-    
+
     return bool(st.session_state.user_email)
+
 
 # --- Main App Logic ---
 if check_authentication():
@@ -59,7 +61,7 @@ if check_authentication():
         st.Page("pages/chat_options.py", title="Chat Options", icon="⚙️"),
         st.Page("pages/account.py", title="Account", icon="👤"),
     ]
-    
+
     pg = st.navigation(pages, position="top")
     pg.run()
 else:
