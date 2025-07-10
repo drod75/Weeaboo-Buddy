@@ -1,67 +1,70 @@
 import streamlit as st
-from src.app.authentication import app_authentication, init_connection
-from src.app.themes import CUSTOM_THEMES  # Import themes
+from src.app.authentication import app_authentication, check_existing_session
+from src.app.themes import CUSTOM_THEMES
 
+# Page config - only set once
 st.set_page_config(
-    page_title="Weeaboo Buddy", page_icon="🎌", initial_sidebar_state="collapsed"
+    page_title="Weeaboo Buddy",
+    page_icon="🎌",
+    initial_sidebar_state="collapsed",
+    layout="wide",  # Faster rendering than wide
 )
 
-# --- Apply The Selected Theme ---
-# This must be the first Streamlit command in your app.
 
-# Set the default theme if not in session state
-if "theme" not in st.session_state:
-    st.session_state.theme = "Streamlit Light"
-
-# Get the selected theme name from session state
-theme_name = st.session_state.theme
-
-# Logic to apply the correct theme
-if theme_name == "Streamlit Light":
-    # Use the default Streamlit light theme
-    st._config.set_option("theme.base", "light")
-elif theme_name == "Streamlit Dark":
-    # Use the default Streamlit dark theme
-    st._config.set_option("theme.base", "dark")
-elif theme_name in CUSTOM_THEMES:
-    # Apply the full custom theme from the dictionary
-    theme_config = CUSTOM_THEMES[theme_name]
-    # Set the base first
-    st._config.set_option("theme.base", theme_config.pop("base", "light"))
-    # Apply all other theme settings
-    for key, value in theme_config.items():
-        st._config.set_option(f"theme.{key}", value)
+# --- Optimize Theme Application ---
+@st.cache_data
+def get_theme_config(theme_name):
+    """Cache theme configurations."""
+    if theme_name in CUSTOM_THEMES:
+        return CUSTOM_THEMES[theme_name].copy()
+    return None
 
 
-# --- Session Management ---
-def check_authentication():
-    """Check if user is authenticated, either from session state or Supabase session."""
-    if "user_email" not in st.session_state:
-        st.session_state.user_email = None
+def apply_theme():
+    """Apply theme only when it changes."""
+    if "theme" not in st.session_state:
+        st.session_state.theme = "Streamlit Light"
 
-    # If no user in session state, check Supabase session
-    if not st.session_state.user_email:
-        try:
-            supabase = init_connection()
-            session = supabase.auth.get_session()
-            if session and session.user:
-                st.session_state.user_email = session.user.email
-                return True
-        except Exception:
-            pass
+    theme_name = st.session_state.theme
 
-    return bool(st.session_state.user_email)
+    # Only apply theme if it's different from last time
+    if (
+        "last_applied_theme" not in st.session_state
+        or st.session_state.last_applied_theme != theme_name
+    ):
+        if theme_name == "Streamlit Light":
+            st._config.set_option("theme.base", "light")
+        elif theme_name == "Streamlit Dark":
+            st._config.set_option("theme.base", "dark")
+        else:
+            theme_config = get_theme_config(theme_name)
+            if theme_config:
+                st._config.set_option("theme.base", theme_config.pop("base", "light"))
+                for key, value in theme_config.items():
+                    st._config.set_option(f"theme.{key}", value)
+
+        st.session_state.last_applied_theme = theme_name
 
 
-# --- Main App Logic ---
-if check_authentication():
-    # User is authenticated, show main app
-    pages = [
+# Apply theme
+apply_theme()
+
+
+# --- Cached Page Definitions ---
+@st.cache_data
+def get_pages():
+    """Cache page definitions."""
+    return [
         st.Page("pages/chat.py", title="Chat", icon="💬"),
         st.Page("pages/chat_options.py", title="Chat Options", icon="⚙️"),
         st.Page("pages/account.py", title="Account", icon="👤"),
     ]
 
+
+# --- Main App Logic ---
+if check_existing_session():
+    # User is authenticated, show main app
+    pages = get_pages()
     pg = st.navigation(pages, position="top")
     pg.run()
 else:
