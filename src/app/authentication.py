@@ -125,6 +125,21 @@ def update_user(new_email, new_password):
         return None
 
 
+def sign_in_with_github():
+    """Signs in the user with GitHub OAuth."""
+    try:
+        supabase = init_connection()
+        supabase.auth.sign_in_with_oauth(
+            {
+                "provider": "github",
+            }
+        )
+        # Clear session cache after login attempt
+        _get_session_data.clear()
+    except Exception as e:
+        st.error(f"GitHub login failed: {e}")
+
+
 def app_authentication():
     """Displays a customized authentication UI and handles logic."""
     # Check for existing session first
@@ -176,3 +191,6 @@ def app_authentication():
                         st.success(
                             "Registration successful! Please log in to continue."
                         )
+
+    if st.button("Login with GitHub", use_container_width=True):
+        sign_in_with_github()
